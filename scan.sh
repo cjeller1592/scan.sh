@@ -1,11 +1,17 @@
 #!/bin/bash
 
+# Get the range of the VPN network 
+
 range=`ip route | grep tap0 | awk '{print $1}'`
 
-nmap $range -oN nmap.txt
+# Feed that range into a ping scan on Nmap
 
-ip=`echo $range | cut -f1,2 -d'.'`
+nmap -sn $range -oN nmap.txt
 
-cat nmap.txt | grep "$ip" | awk '{if(NR>1)print}' | awk '{print $5}' > iplist.txt
+# Edit the output
+
+grep 'report' uplist | awk '{print $5}' | head -n -1 > iplist.txt
+
+# Feed the edited output into an Nmap version scan
 
 nmap -sV -iL iplist.txt -oN version.txt
